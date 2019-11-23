@@ -68,7 +68,9 @@ public class GDChonVongDauFRM extends JFrame implements ActionListener {
     }
 
     private void rowClicked(int i){
-
+        VongDau vd = vds.get(i);
+        System.out.println(vd);
+        new GDLenLichTranFRM(vd);
     }
 
     class VongDauTableModel extends DefaultTableModel {
@@ -121,10 +123,12 @@ public class GDChonVongDauFRM extends JFrame implements ActionListener {
 
         @Override
         public void mousePressed(MouseEvent mouseEvent) {
+            System.out.println("Mouse Clicked");
             JTable table =(JTable) mouseEvent.getSource();
             Point point = mouseEvent.getPoint();
             int row = table.rowAtPoint(point);
             if (mouseEvent.getClickCount() == 2 && table.getSelectedRow() != -1) {
+                System.out.println(row);
                 rowClicked(row);
             }
         }
