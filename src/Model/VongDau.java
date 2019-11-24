@@ -1,4 +1,4 @@
-package VongDau.Model;
+package Model;
 
 import java.sql.Date;
 
@@ -6,11 +6,21 @@ public class VongDau {
     private int soVong;
     private Date tgbd;
     private Date tgkt;
+    private int id;
 
-    public VongDau(int soVong, Date tgbd, Date tgkt) {
+    public VongDau(int id, int soVong, Date tgbd, Date tgkt) {
+        this.id = id;
         this.soVong = soVong;
         this.tgbd = tgbd;
         this.tgkt = tgkt;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public int getSoVong() {

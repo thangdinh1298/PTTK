@@ -1,10 +1,13 @@
-package VongDau.View;
+package TranDau.View;
 
-import VongDau.Model.VongDau;
+import Model.*;
+import TranDau.Control.TranDauDAO;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Date;
+import java.util.ArrayList;
 
 public class GDLenLichTranFRM extends JFrame implements ActionListener {
     private VongDau vd;
@@ -27,10 +30,6 @@ public class GDLenLichTranFRM extends JFrame implements ActionListener {
         super("Len Lich");
         this.vd = vd;
         txtThoiGian = new JTextField("yyyy-mm-dd");
-        comNguoi1 = new JComboBox();
-        comNguoi2 = new JComboBox();
-        trongTai = new JComboBox();
-        bLV = new JComboBox();
         btnXacNhan = new JButton("Xac Nhan");
         btnTroVe = new JButton("Tro Ve");
         lblThoiGian = new JLabel("Thoi Gian");
@@ -38,6 +37,16 @@ public class GDLenLichTranFRM extends JFrame implements ActionListener {
         lblNguoi2 = new JLabel("Nguoi 2");
         lblTrongTai = new JLabel("Trong Tai");
         lblBLV = new JLabel("BLV");
+
+        TranDauDAO dao = new TranDauDAO();
+        ArrayList<Nguoi> ncs = dao.getNguoiChoiList();
+        ArrayList<Nguoi> blvs = dao.getBLVList();
+        ArrayList<Nguoi> tts = dao.getTrongTaiList();
+
+        comNguoi1 = new JComboBox(ncs.toArray());
+        comNguoi2 = new JComboBox(ncs.toArray());
+        trongTai = new JComboBox(tts.toArray());
+        bLV = new JComboBox(blvs.toArray());
 
         JPanel mainPanel = new JPanel();
         SpringLayout layout = new SpringLayout();
@@ -118,6 +127,19 @@ public class GDLenLichTranFRM extends JFrame implements ActionListener {
     }
 
     private void btnXacNhanClicked(){
+        NguoiChoi_TranDau nctd1 = new NguoiChoi_TranDau();
+        NguoiChoi_TranDau nctd2 = new NguoiChoi_TranDau();
 
+        nctd1.setNguoiChoi((NguoiChoi) comNguoi1.getSelectedItem());
+        nctd2.setNguoiChoi((NguoiChoi) comNguoi2.getSelectedItem());
+
+        TranDau tranDau = new TranDau();
+        tranDau.setThoiGian(Date.valueOf(txtThoiGian.getText()));
+        tranDau.setbLV((BLV) bLV.getSelectedItem());
+        tranDau.setTrongTai((TrongTai) trongTai.getSelectedItem());
+        tranDau.setnCTD2(nctd2);
+        tranDau.setnCTD1(nctd1);
+        TranDauDAO dao = new TranDauDAO();
+        dao.luuTranDau(tranDau, vd);
     }
 }

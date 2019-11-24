@@ -1,5 +1,6 @@
 package GiaiDau.View;
 
+import GiaiDau.Control.GiaiDauDAO;
 import Model.BanToChuc;
 import Model.GiaiDau;
 import VongDau.View.GDChonVongDauFRM;
@@ -24,7 +25,6 @@ public class GDChonGiaiFRM extends JFrame implements ActionListener {
         btnTim = new JButton("Tim");
         gds = new ArrayList<>();
         tblGiai = new JTable(new GiaiDauTableModel());
-        gds.add(new GiaiDau("PTIT_2017", "PTIT", "A3"));
         txtTenGiai = new JTextField("ABCDEF");
 
         this.setLayout(new BorderLayout());
@@ -65,7 +65,10 @@ public class GDChonGiaiFRM extends JFrame implements ActionListener {
     }
 
     private void btnTimClicked(){
-
+        GiaiDauDAO dao = new GiaiDauDAO();
+        gds = dao.timGiaiDauTheoTen(txtTenGiai.getText());
+        System.out.println("size is: " + gds.size());
+        ((DefaultTableModel) tblGiai.getModel()).fireTableDataChanged();
     }
 
     private void btnTroVeClicked(){

@@ -1,9 +1,9 @@
-package VongDau.View;
+package TranDau.View;
 
 import Model.GiaiDau;
-import TranDau.View.GDanhSachTranFRM;
+import Model.TranDau;
 import Model.VongDau;
-import VongDau.Control.VongDauDAO;
+import TranDau.Control.TranDauDAO;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -12,49 +12,64 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.ArrayList;
 import java.sql.Date;
+import java.util.ArrayList;
 
-public class GDChonVongDauFRM extends JFrame implements ActionListener {
-    private GiaiDau giaiDau;
-    private JTable tblVong;
+public class GDanhSachTranFRM extends JFrame implements ActionListener {
+    private VongDau vong;
+    private GiaiDau gd;
     private JButton btnTroVe;
-    private ArrayList<VongDau> vds;
+    private JTable tblTran;
+    private ArrayList<TranDau> tds;
+    private JButton btnThem;
+    private final int WIDTH = 800;
+    private final int HEIGHT = 600;
 
-    public GDChonVongDauFRM(GiaiDau giaiDau) {
-        super("Chon Vong");
-        this.giaiDau = giaiDau;
+    public GDanhSachTranFRM(GiaiDau gd, VongDau vong) {
+        super("Danh Sach Tran");
+        this.vong = vong;
+        this.gd = gd;
         btnTroVe = new JButton("Tro ve");
-        vds = new ArrayList<>();
-        tblVong = new JTable(new VongDauTableModel());
+        btnThem = new JButton("Them");
+        tds = new ArrayList<>();
+        tblTran = new JTable(new TranDauTableModel());
 
-        VongDauDAO dao = new VongDauDAO();
-        vds = dao.timVongDauTheoGiai(giaiDau.getId());
-        ((DefaultTableModel) tblVong.getModel()).fireTableDataChanged();
+        TranDauDAO dao = new TranDauDAO();
+        tds = dao.timTranDauTheoVong(vong.getId());
+
+        System.out.println("--------------------");
+        System.out.println("There are " + tds.size());
+
+        ((DefaultTableModel) tblTran.getModel()).fireTableDataChanged();
 
         this.setLayout(new BorderLayout());
 
         JPanel mainPanel = new JPanel();
         SpringLayout layout = new SpringLayout();
         mainPanel.setLayout(layout);
-        JScrollPane pane = new JScrollPane(tblVong);
+        JScrollPane pane = new JScrollPane(tblTran);
 
         mainPanel.add(btnTroVe);
         mainPanel.add(pane);
+        mainPanel.add(btnThem);
 
         btnTroVe.addActionListener(this);
-        tblVong.addMouseListener(new VongTBLMouseListener());
+        btnThem.addActionListener(this);
+        tblTran.addMouseListener(new TranTBLMouseListener());
 
         layout.putConstraint(SpringLayout.NORTH, pane, 20, SpringLayout.NORTH, mainPanel);
         layout.putConstraint(SpringLayout.WEST, pane, 20, SpringLayout.WEST, mainPanel);
         layout.putConstraint(SpringLayout.EAST, pane, -20, SpringLayout.EAST, mainPanel);
         layout.putConstraint(SpringLayout.SOUTH, pane, -50, SpringLayout.SOUTH, mainPanel);
 
-        layout.putConstraint(SpringLayout.WEST, btnTroVe, 1024/2 - 30, SpringLayout.WEST, mainPanel);
+        layout.putConstraint(SpringLayout.WEST, btnTroVe, WIDTH/2 + 50, SpringLayout.WEST, mainPanel);
         layout.putConstraint(SpringLayout.SOUTH, btnTroVe, -10, SpringLayout.SOUTH, mainPanel);
 
+        layout.putConstraint(SpringLayout.WEST, btnThem, WIDTH/2 - 50, SpringLayout.WEST, mainPanel);
+        layout.putConstraint(SpringLayout.SOUTH, btnThem, -10, SpringLayout.SOUTH, mainPanel);
+
         this.add(mainPanel);
-        this.setSize(1024,768);
+        this.setSize(WIDTH,HEIGHT);
         this.setVisible(true);
         this.setLocation(200,10);
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -65,28 +80,33 @@ public class GDChonVongDauFRM extends JFrame implements ActionListener {
         JButton btnClicked = (JButton)e.getSource();
         if (btnClicked == btnTroVe){
             btnTroVeClicked();
+        } else if(btnClicked == btnThem){
+            btnThemClicked();
         }
+    }
+
+    private void rowClicked(int row) {
+
     }
 
     private void btnTroVeClicked(){
         this.dispose();
     }
 
-    private void rowClicked(int i){
-        VongDau vd = vds.get(i);
-        new GDanhSachTranFRM(giaiDau, vd);
+    private void btnThemClicked(){
+        new GDLenLichTranFRM(vong);
     }
 
-    class VongDauTableModel extends DefaultTableModel {
-        private String[] columnNames = {"So Vong",  "Thoi Gian Bat Dau", "Thoi Gian Ket Thuc"};
-        private final Class<?>[] columnTypes = new  Class<?>[] {Integer.class, Date.class, Date.class};
+    class TranDauTableModel extends DefaultTableModel {
+        private String[] columnNames = {"Thu tu",  "Thoi Gian", "Nguoi choi 1", "Nguoi choi 2"/*, "BLV"*/};
+        private final Class<?>[] columnTypes = new  Class<?>[] {Integer.class, Date.class, String.class, String.class/*, Date.class*/};
 
         @Override public int getColumnCount() {
             return columnNames.length;
         }
 
         @Override public int getRowCount() {
-            return vds.size();
+            return tds.size();
         }
 
         @Override public String getColumnName(int columnIndex) {
@@ -101,11 +121,15 @@ public class GDChonVongDauFRM extends JFrame implements ActionListener {
             /*Adding components*/
             switch (columnIndex) {
                 case 0:
-                    return vds.get(rowIndex).getSoVong();
+                    return rowIndex;
                 case 1:
-                    return vds.get(rowIndex).getTgbd();
+                    return tds.get(rowIndex).getThoiGian();
                 case 2:
-                    return vds.get(rowIndex).getTgkt();
+                    return tds.get(rowIndex).getnCTD1().getNguoiChoi().getHoTen();
+                case 3:
+                    return tds.get(rowIndex).getnCTD2().getNguoiChoi().getHoTen();
+//                case 4:
+//                    return tds.get(rowIndex).getbLV();
                 default: return "Error";
             }
         }
@@ -116,7 +140,7 @@ public class GDChonVongDauFRM extends JFrame implements ActionListener {
         }
     }
 
-    class VongTBLMouseListener implements MouseListener {
+    class TranTBLMouseListener implements MouseListener {
 
         @Override
         public void mouseClicked(MouseEvent mouseEvent) {
@@ -125,7 +149,6 @@ public class GDChonVongDauFRM extends JFrame implements ActionListener {
 
         @Override
         public void mousePressed(MouseEvent mouseEvent) {
-            System.out.println("Mouse Clicked");
             JTable table =(JTable) mouseEvent.getSource();
             Point point = mouseEvent.getPoint();
             int row = table.rowAtPoint(point);
@@ -150,4 +173,5 @@ public class GDChonVongDauFRM extends JFrame implements ActionListener {
 
         }
     }
+
 }

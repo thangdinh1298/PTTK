@@ -1,14 +1,20 @@
 package Model;
 
 public class GiaiDau {
+    private int id;
     private String tenGiai;
     private String tenDVTC;
     private String truongDau;
 
-    public GiaiDau(String tenGiai, String tenDVTC, String truongDau) {
+    public GiaiDau(int id, String tenGiai, String tenDVTC, String truongDau) {
+        this.id = id;
         this.tenGiai = tenGiai;
         this.tenDVTC = tenDVTC;
         this.truongDau = truongDau;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getTenGiai() {
